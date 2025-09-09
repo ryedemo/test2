@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Firebase Website</title>
+</head>
+<body>
+  <h1>My Firebase Website</h1>
+
+  <input id="nameInput" placeholder="Enter your name">
+  <button id="saveBtn">Save</button>
+
+  <h2>Saved Names</h2>
+  <ul id="dataList"></ul>
+
+  <script type="module">
+    // Import Firebase SDKs from CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // 🔹 Use your Firebase config here
+    const firebaseConfig = {
+      apiKey: "AIzaSyC3pkHZH_nB5R2Vnef3-r_OY8vNsCYF4UM",
+      authDomain: "test2-b8b24.firebaseapp.com",
+      projectId: "test2-b8b24",
+      storageBucket: "test2-b8b24.firebasestorage.app",
+      messagingSenderId: "627179009610",
+      appId: "1:627179009610:web:e8f6ced6e3112cc54358b3"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const nameInput = document.getElementById("nameInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const dataList = document.getElementById("dataList");
+
+    // Save name to Firestore
+    saveBtn.onclick = async () => {
+      if (!nameInput.value.trim()) return alert("Please enter a name!");
+      await addDoc(collection(db, "users"), { name: nameInput.value });
+      nameInput.value = "";
+      loadData();
+    };
+
+    // Load all names from Firestore
+    async function loadData() {
+      dataList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "users"));
+      querySnapshot.forEach((doc) => {
+        const li = document.createElement("li");
+        li.textContent = doc.data().name;
+        dataList.appendChild(li);
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
